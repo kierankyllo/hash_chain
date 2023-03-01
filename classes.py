@@ -31,6 +31,17 @@ class Hashchain:
         ''' Returns the last inspected hash to return True from Hashchain.validate() empty byte string if None'''
         return self.__last_good
     
+    def generate(self, N):
+        ''' Accepts an integer N and returns a list of N hashes forward from last good'''
+        links = []
+        length = 0
+        kwn_hash = self.__last_good
+        while length < N:
+            kwn_hash = self.__make_hashlink(self.__secret, kwn_hash)
+            links.append(kwn_hash)
+            length += 1
+        return links
+    
     def __make_hashlink(self, secret, in_hash):
         # private function to construct an additional link from a secret and the last link
         concat = secret + in_hash
