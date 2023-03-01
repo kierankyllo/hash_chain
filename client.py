@@ -3,7 +3,7 @@ import pickle
 from classes import Message, Hashchain, Colour
 
 
-SECRET = b'h6f28g865307gse3'
+SECRET = b'topsecret'
 HOST = '127.0.0.1'
 PORT = 9999
 
@@ -17,31 +17,33 @@ def inspect(payload):
 
 if __name__ == "__main__":
 
-    # Create a socket connection.
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((HOST, PORT))
-
     # construct the hashchain object
     chain = Hashchain(SECRET)
+try:
+    while True:
+        # Create a socket connection.
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((HOST, PORT))
 
-    # setup a prompt
-    text_string = input(' <INPUT> : ')
+        # setup a prompt
+        text_string = input(' <INPUT> : ')
 
-    # compose the message object
-    message = Message(chain, text_string)
+        # compose the message object
+        message = Message(chain, text_string)
 
-    # Pickle the object and send it to the server
-    data = pickle.dumps(message)
-    s.send(data)
-    print(' <SENT> : '+ text_string)
+        # Pickle the object and send it to the server
+        data = pickle.dumps(message)
+        s.send(data)
+        print(' <SENT> : '+ text_string)
 
-    # recieve the response
-    ack = s.recv(1024)
-    payload = pickle.loads(ack)
+        # recieve the response
+        ack = s.recv(1024)
+        payload = pickle.loads(ack)
 
-    # inspect the payload of the message
-    inspect(payload)
+        # inspect the payload of the message
+        inspect(payload)
 
+except KeyboardInterrupt:
     # close the connection
     s.close()
-    print (' <CLOSED>')
+    print ('\n <CLOSED>')

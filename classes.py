@@ -13,19 +13,15 @@ class Message:
 
 class Hashchain:
     ''' Defines a class of hashchain objects, is constructed with a byte string as a shared secret'''
-    def __init__(self, SECRET):
+    def __init__(self, SECRET):        
         self.__secret = SECRET
         self.__link0 = hashlib.sha256(SECRET).digest()
-        self.__last_good = b''
+        self.__last_good = self.__link0
     
     def validate(self, unk_hash):
-        ''' Returns True if the provided hash is in the chain, False otherwise'''
+        ''' Returns True if the provided hash is next in the chain, False otherwise'''
         if self.__check_links(self.__last_good, unk_hash) == True:
             return True
-        elif self.__check_links(self.__link0, unk_hash) == True:
-            return True
-        else:
-            return False
         
     def next(self):
         ''' Returns the next hash in the chain based on the hash to return True from Hashchain.validate()'''
@@ -40,14 +36,14 @@ class Hashchain:
         concat = secret + in_hash
         return hashlib.sha256(concat).digest()
 
-    def __check_links(self, in_hash, unk_hash, depth=10000):
+    def __check_links(self, kwn_hash, unk_hash, depth=50000):
         # private function to scan forward in the hash chain to validate an unknown hash
         while depth > 0:
-            if in_hash == unk_hash:
-                self.__last_good = in_hash
+            if kwn_hash == unk_hash:
+                self.__last_good = kwn_hash
                 return True
             else:
-                in_hash = self.__make_hashlink(self.__secret, in_hash)
+                kwn_hash = self.__make_hashlink(self.__secret, kwn_hash)
                 depth -= 1
         return False
 

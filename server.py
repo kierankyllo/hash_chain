@@ -1,48 +1,56 @@
 import socketserver
-import pickle
 from classes import Message, Hashchain, Colour
+import pickle
 
-
-SECRET = b'h6f28g865307gse3'
-HOST = '127.0.0.1'
-PORT = 9999
-
-
-class MyTCPSocketHandler(socketserver.BaseRequestHandler):
+class TCP_Handler(socketserver.BaseRequestHandler):
     """
-    The RequestHandler class for our server.
+    Our server request handler is derived from the base class BaseRequestHandler from the sockerserver library
 
     """
     def inspect(self):
-        if self.chain.validate(self.header):
-            print(Colour.OK + f'{self.client_address[0]} <VERIFIED> : '+ Colour.END + self.message)
+        '''A function to inspect the payload and provide feedback to the console'''
+        if self.__chain.validate(self.__header):
+            print(Colour.OK + f'{self.client_address[0]} <VERIFIED> : '+ Colour.END + self.__message + ': ' + str(self.__chain.last().hex()))
         else:
-            print(Colour.WARN + f'{self.client_address[0]} <NOT VERIFIED> : '+ Colour.END + self.message)
+            print(Colour.WARN + f'{self.client_address[0]} <NOT VERIFIED> : '+ Colour.END + self.__message + ': ' + str(self.__chain.last().hex()))
+
 
     def handle(self):
+        '''This is the handler function for requests for our server'''
+        # setup the hashchain object 
+        self.__chain = Hashchain(SECRET)
+
         # self.request is the TCP socket connected to the client
-        self.data = self.request.recv(1024)
-        self.payload = pickle.loads(self.data)
-        self.header = self.payload.header
-        self.message = self.payload.body
-        self.chain = Hashchain(SECRET)
-        self.colouring = ''
+        self.__data = self.request.recv(1024)
+        self.__payload = pickle.loads(self.__data)
+
+        # unpack the message
+        self.__header = self.__payload.header
+        self.__message = self.__payload.body
 
         # display the address, verification status, and the message 
         self.inspect()
 
         # create an acknowledgement message
-        self.ack = Message(self.chain, 'ACK: '+ self.message)
-        self.response = pickle.dumps(self.ack)
+        self.__ack = Message(self.__chain, 'ACK: '+ self.__message)
+        self.__response = pickle.dumps(self.__ack)
         
         # respond with a message object acknowledgement
-        self.request.sendall(self.response)
+        self.request.sendall(self.__response)
 
+SECRET = b'topsecret'
+HOST = '127.0.0.1'
+PORT = 9999
 
-if __name__ == "__main__":
-    
+if __name__ == "__main__":    
     # instantiate the server, and bind to localhost on port 9999
-    server = socketserver.TCPServer((HOST, PORT), MyTCPSocketHandler)
-
+    server = socketserver.TCPServer((HOST, PORT), TCP_Handler)
+try:
     # activate the server
+    print('\n <SESSION OPENED>')
     server.serve_forever()
+
+except KeyboardInterrupt:
+    # shutdown gracefully
+    print('\n <SESSION CLOSED>')
+    server.server_close()
