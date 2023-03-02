@@ -52,7 +52,7 @@ class Hashchain:
     def __check_links(self, kwn_hash, unk_hash, depth=50000):
         # private function to scan forward in the hash chain to validate an unknown hash
         while depth > 0:
-            if kwn_hash == unk_hash:
+            if kwn_hash == unk_hash and kwn_hash != self.__last_good:
                 self.__last_good = kwn_hash
                 return True
             else:
