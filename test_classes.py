@@ -1,5 +1,9 @@
 from classes import Message, Hashchain
 
+
+''' This testing suite is executed using pytest in terminal '''
+
+
 SECRET = b'testsecret'
 BAD_SECRET = b'badsecret'
 BODY = 'test message body'
