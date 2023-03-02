@@ -22,6 +22,8 @@ class Hashchain:
         ''' Returns True if the provided hash is next in the chain, False otherwise'''
         if self.__check_links(self.__last_good, unk_hash) == True:
             return True
+        else:
+            return False
         
     def next(self):
         ''' Returns the next hash in the chain based on the hash to return True from Hashchain.validate()'''
