@@ -10,15 +10,15 @@ PORT = 9999
 
 def inspect(payload):
     if chain.validate(payload.header):
-        print(Colour.OK + f' <VERIFIED> : '+ Colour.END + payload.body)
+        print(Colour.OK + f' <VERIFIED> : '+ Colour.END + payload.body + str(payload.header.hex()))
     else:
-        print(Colour.WARN + f' <NOT VERIFIED> : '+ Colour.END + payload.body)
+        print(Colour.WARN + f' <NOT VERIFIED> : '+ Colour.END + payload.body + ' : '+ str(payload.header.hex()))
 
 
 if __name__ == "__main__":
 
     # construct the hashchain object
-    chain = Hashchain(SECRET)
+    chain = Hashchain(SECRET, 500)
 try:
     while True:
         # Create a socket connection.

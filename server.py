@@ -2,6 +2,9 @@ import socketserver
 from classes import Message, Hashchain, Colour
 import pickle
 
+
+
+
 class TCP_Handler(socketserver.BaseRequestHandler):
     """
     Our server request handler is derived from the base class BaseRequestHandler from the sockerserver library
@@ -9,17 +12,15 @@ class TCP_Handler(socketserver.BaseRequestHandler):
     """
     def inspect(self):
         '''A function to inspect the payload and provide feedback to the console'''
-        if self.__chain.validate(self.__header):
-            print(Colour.OK + f'{self.client_address[0]} <VERIFIED> : '+ Colour.END + self.__message + ': ' + str(self.__chain.last().hex()))
+        if chain.validate(self.__header):
+            print(Colour.OK + f'{self.client_address[0]} <VERIFIED> : '+ Colour.END + self.__message + ': ' + str(chain.last().hex()))
         else:
-            print(Colour.WARN + f'{self.client_address[0]} <NOT VERIFIED> : '+ Colour.END + self.__message + ': ' + str(self.__chain.last().hex()))
+            print(Colour.WARN + f'{self.client_address[0]} <NOT VERIFIED> : '+ Colour.END + self.__message + ': ' + str(chain.last().hex()))
 
 
     def handle(self):
         '''This is the handler function for requests for our server'''
-        # setup the hashchain object 
-        self.__chain = Hashchain(SECRET)
-
+        
         # self.request is the TCP socket connected to the client
         self.__data = self.request.recv(1024)
         self.__payload = pickle.loads(self.__data)
@@ -32,7 +33,7 @@ class TCP_Handler(socketserver.BaseRequestHandler):
         self.inspect()
 
         # create an acknowledgement message
-        self.__ack = Message(self.__chain, 'ACK: '+ self.__message)
+        self.__ack = Message(chain, 'ACK: '+ self.__message)
         self.__response = pickle.dumps(self.__ack)
         
         # respond with a message object acknowledgement
@@ -41,6 +42,8 @@ class TCP_Handler(socketserver.BaseRequestHandler):
 SECRET = b'topsecret'
 HOST = '127.0.0.1'
 PORT = 9999
+
+chain = Hashchain(SECRET, 500)
 
 if __name__ == "__main__":    
     # instantiate the server, and bind to localhost on port 9999

@@ -13,52 +13,46 @@ class Message:
 
 class Hashchain:
     ''' Defines a class of hashchain objects, is constructed with a byte string as a shared secret'''
-    def __init__(self, SECRET):        
-        self.__secret = SECRET
-        self.__link0 = hashlib.sha256(SECRET).digest()
-        self.__last_good = self.__link0
-    
+    def __init__(self, SECRET, N): 
+        self.__secret = SECRET            
+        self.__link_0 = hashlib.sha256(SECRET).digest()
+        self.__hash_chain = []
+        self.__generate(N)
+        self.__last = b'hhh'
+
     def validate(self, unk_hash):
         ''' Returns True if the provided hash is next in the chain, False otherwise'''
-        if self.__check_links(self.__last_good, unk_hash) == True:
+        if unk_hash == self.__hash_chain[-1]:
+            self.__last = unk_hash
+            self.__hash_chain.pop()
             return True
         else:
             return False
         
     def next(self):
-        ''' Returns the next hash in the chain based on the hash to return True from Hashchain.validate()'''
-        return self.__make_hashlink(self.__secret, self.__last_good)
+        ''' Returns and pops the next hash in the chain'''
+        return self.__hash_chain.pop()
 
     def last(self):
         ''' Returns the last inspected hash to return True from Hashchain.validate() empty byte string if None'''
-        return self.__last_good
+        return self.__last
     
-    def generate(self, N):
-        ''' Accepts an integer N and returns a list of N hashes forward from last good'''
-        links = []
-        length = 0
-        kwn_hash = self.__last_good
-        while length < N:
-            kwn_hash = self.__make_hashlink(self.__secret, kwn_hash)
-            links.append(kwn_hash)
-            length += 1
-        return links
+    def chain(self):
+        ''' Returns a copy of the hashchain in its current state'''
+        return self.__hash_chain
     
-    def __make_hashlink(self, secret, in_hash):
+    def __generate(self, N):
+        # private function to generate the hash chain
+        kwn_hash = self.__link_0
+        for i in range(N):
+            kwn_hash = self.__make_link(self.__secret, kwn_hash)
+            self.__hash_chain.append(kwn_hash)
+             
+    def __make_link(self, secret, in_hash):
         # private function to construct an additional link from a secret and the last link
         concat = secret + in_hash
         return hashlib.sha256(concat).digest()
 
-    def __check_links(self, kwn_hash, unk_hash, depth=50000):
-        # private function to scan forward in the hash chain to validate an unknown hash
-        while depth > 0:
-            if kwn_hash == unk_hash and kwn_hash != self.__last_good:
-                self.__last_good = kwn_hash
-                return True
-            else:
-                kwn_hash = self.__make_hashlink(self.__secret, kwn_hash)
-                depth -= 1
-        return False
 
 
 class Colour:
