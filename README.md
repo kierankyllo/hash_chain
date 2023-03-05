@@ -1,6 +1,5 @@
 # CS435 Programming Assignment
 ## Kieran Brooks
-## 200236702
 ## Dr. Qian Yu 
 
 ## Introduction:
