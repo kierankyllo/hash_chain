@@ -1,6 +1,7 @@
 import hashlib
 
 
+
 class Message:
     ''' Defines a message class containing header and body members, 
         Constructed from a chain object and a message string'''
@@ -18,7 +19,7 @@ class Hashchain:
         self.__link_0 = hashlib.sha256(SECRET).digest()
         self.__hash_chain = []
         self.__generate(N)
-        self.__last = b'hhh'
+        self.__last = b'00000000000000000000000000000000'
 
     def validate(self, unk_hash):
         ''' Returns True if the provided hash is next in the chain, False otherwise'''

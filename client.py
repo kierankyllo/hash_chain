@@ -10,9 +10,9 @@ PORT = 9999
 
 def inspect(payload):
     if chain.validate(payload.header):
-        print(Colour.OK + f' <VERIFIED> : '+ Colour.END + payload.body + str(payload.header.hex()))
+        print(Colour.OK + f' <VERIFIED> : '+ Colour.END + payload.body + ' : ' + str(payload.header.hex()))
     else:
-        print(Colour.WARN + f' <NOT VERIFIED> : '+ Colour.END + payload.body + ' : '+ str(payload.header.hex()))
+        print(Colour.WARN + f' <NOT VERIFIED> : '+ Colour.END + payload.body + ' : ' + str(payload.header.hex()))
 
 
 if __name__ == "__main__":
